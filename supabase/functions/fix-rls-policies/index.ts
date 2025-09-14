@@ -91,6 +91,41 @@ Deno.serve(async (req) => {
           );
         END;
         $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+        -- إنشاء دالة لجلب جميع المستخدمين
+        CREATE OR REPLACE FUNCTION get_all_users()
+        RETURNS TABLE (
+          id uuid,
+          username text,
+          role text,
+          full_name text,
+          department text,
+          position text,
+          is_active boolean,
+          created_at timestamptz,
+          updated_at timestamptz
+        ) AS $$
+        BEGIN
+          -- التحقق من أن المستخدم الحالي مدير
+          IF NOT is_admin() THEN
+            RAISE EXCEPTION 'Access denied. Admin privileges required.';
+          END IF;
+          
+          RETURN QUERY
+          SELECT 
+            u.id,
+            u.username,
+            u.role,
+            u.full_name,
+            u.department,
+            u.position,
+            u.is_active,
+            u.created_at,
+            u.updated_at
+          FROM app_users u
+          ORDER BY u.created_at DESC;
+        END;
+        $$ LANGUAGE plpgsql SECURITY DEFINER;
       `
     })
 
