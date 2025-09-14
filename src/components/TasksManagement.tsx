@@ -79,7 +79,7 @@ export const TasksManagement: React.FC<TasksManagementProps> = ({ onDataChange }
   const fetchData = async () => {
     try {
       // Check if Supabase is properly configured
-      if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+      if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY) {
         console.error('Supabase configuration missing. Please check your .env file.')
         addNotification('error', 'خطأ في إعدادات قاعدة البيانات')
         setLoading(false)
