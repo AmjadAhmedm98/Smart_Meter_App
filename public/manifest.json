@@ -1,0 +1,21 @@
+{
+  "name": "نظام إدارة المقاييس",
+  "short_name": "إدارة المقاييس",
+  "description": "نظام متكامل لإدارة قراءة مقاييس الكهرباء والمياه",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e40af",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/Asset 5@3x.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["business", "productivity", "utilities"]
+}
