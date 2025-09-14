@@ -16,7 +16,7 @@ npm install
 3. تحديث متغيرات البيئة في ملف `.env`:
 
 ```env
-VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+VITE_SUPABASE_URL=https://exbfjwkcpmkjrjsgmyiq.supabase.co
 VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_nrV9ZOSld29-tAKs26c6lA_6eOTqPlr
 ```
 
