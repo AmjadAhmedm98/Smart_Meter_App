@@ -73,18 +73,28 @@ export const UserManagement: React.FC = () => {
     try {
       console.log('Fetching users from app_users table...')
       // جلب المستخدمين عبر Edge Function لتجاوز RLS
-      const { data: usersData, error: usersError } = await supabase.functions.invoke('admin-users', {
-        body: { action: 'GET' }
-      })
+      try {
+        const { data: usersData, error: usersError } = await supabase.functions.invoke('admin-users', {
+          body: { action: 'GET' }
+        })
 
-      if (usersError) {
-        console.error('Error fetching users:', usersError)
-        addNotification('error', 'خطأ في جلب المستخدمين: ' + usersError.message)
+        if (usersError) {
+          console.error('Error fetching users:', usersError)
+          if (usersError.message.includes('Edge Function returned a non-2xx status code')) {
+            addNotification('error', 'Edge Function غير مُعد بشكل صحيح. تحقق من إعدادات Supabase Dashboard > Edge Functions > admin-users > Settings')
+          } else {
+            addNotification('error', 'خطأ في جلب المستخدمين: ' + usersError.message)
+          }
+          return
+        }
+
+        console.log('Users fetched successfully:', usersData?.data?.length || 0, usersData?.data)
+        setUsers(usersData?.data || [])
+      } catch (functionError: any) {
+        console.error('Edge Function error:', functionError)
+        addNotification('error', 'Edge Function admin-users غير متوفر. يرجى إعداده في Supabase Dashboard')
         return
       }
-
-      console.log('Users fetched successfully:', usersData?.data?.length || 0, usersData?.data)
-      setUsers(usersData?.data || [])
     } catch (error) {
       console.error('Error fetching users:', error)
       addNotification('error', 'خطأ في جلب المستخدمين: ' + (error as Error).message)
