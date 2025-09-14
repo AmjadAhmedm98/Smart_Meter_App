@@ -18,6 +18,7 @@ npm install
 ```env
 VITE_SUPABASE_URL=https://exbfjwkcpmkjrjsgmyiq.supabase.co
 VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_nrV9ZOSld29-tAKs26c6lA_6eOTqPlr
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4YmZqd2tjcG1ranJqc2dteWlxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzYxNDU2OSwiZXhwIjoyMDczMTkwNTY5fQ.4m1xUGf2tTD2jCsxJ18ue6_Ib5B9CzIayyq3aBxynQ0
 ```
 
 ### 3. تطبيق المايجريشن

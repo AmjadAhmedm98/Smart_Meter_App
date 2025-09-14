@@ -12,7 +12,7 @@
 ### 2. إعداد متغيرات البيئة لدالة auth-login
 في إعدادات الدالة:
 - `SUPABASE_URL`: https://exbfjwkcpmkjrjsgmyiq.supabase.co
-- `SUPABASE_SERVICE_ROLE_KEY`: sb_secret_kWj4x2Rra0LIHOeDTWhdvw_BJYDiiJs
+- `SUPABASE_SERVICE_ROLE_KEY`: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4YmZqd2tjcG1ranJqc2dteWlxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzYxNDU2OSwiZXhwIjoyMDczMTkwNTY5fQ.4m1xUGf2tTD2jCsxJ18ue6_Ib5B9CzIayyq3aBxynQ0
 
 ### 3. إنشاء Edge Function لإدارة المستخدمين
 1. إنشاء دالة جديدة: `admin-users`
