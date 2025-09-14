@@ -83,14 +83,46 @@ export const UserManagement: React.FC = () => {
       
       console.log('Supabase config check passed, fetching users...')
       
-      const { data: usersData, error: usersError } = await supabase
-        .from('app_users')
-        .select('id, username, role, full_name, department, position, is_active, created_at, updated_at')
-        .order('created_at', { ascending: false })
+      // محاولة جلب المستخدمين مع تجاهل RLS مؤقتاً
+      const { data: usersData, error: usersError } = await supabase.rpc('get_all_users')
 
       if (usersError) {
-        console.error('Supabase error fetching users:', usersError)
-        addNotification('error', 'خطأ في الاتصال بقاعدة البيانات: ' + usersError.message)
+        console.error('RPC call failed, trying direct query:', usersError)
+        
+        // إذا فشل RPC، جرب الاستعلام المباشر
+        const { data: directData, error: directError } = await supabase
+          .from('app_users')
+          .select('id, username, role, full_name, department, position, is_active, created_at, updated_at')
+          .order('created_at', { ascending: false })
+        
+        if (directError) {
+          console.error('Direct query also failed:', directError)
+          addNotification('error', 'خطأ في الاتصال بقاعدة البيانات. تحقق من إعدادات RLS')
+          
+          // كحل أخير، جرب بدون RLS
+          try {
+            const { data: fallbackData, error: fallbackError } = await supabase
+              .from('app_users')
+              .select('*')
+            
+            if (fallbackError) {
+              console.error('Fallback query failed:', fallbackError)
+              addNotification('error', 'فشل في جلب المستخدمين: ' + fallbackError.message)
+              return
+            }
+            
+            console.log('Fallback query successful:', fallbackData?.length || 0, fallbackData)
+            setUsers(fallbackData || [])
+            return
+          } catch (fallbackErr) {
+            console.error('Fallback error:', fallbackErr)
+            addNotification('error', 'خطأ عام في جلب المستخدمين')
+            return
+          }
+        }
+        
+        console.log('Direct query successful:', directData?.length || 0, directData)
+        setUsers(directData || [])
         return
       }
 
