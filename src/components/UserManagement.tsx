@@ -72,23 +72,37 @@ export const UserManagement: React.FC = () => {
   const fetchUsers = async () => {
     try {
       console.log('Fetching users from app_users table...')
-      // جلب المستخدمين مباشرة من قاعدة البيانات
+      
+      // التحقق من إعدادات Supabase أولاً
+      if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY) {
+        console.error('Supabase configuration missing')
+        addNotification('error', 'إعدادات قاعدة البيانات مفقودة')
+        setLoading(false)
+        return
+      }
+      
+      console.log('Supabase config check passed, fetching users...')
+      
       const { data: usersData, error: usersError } = await supabase
         .from('app_users')
         .select('id, username, role, full_name, department, position, is_active, created_at, updated_at')
         .order('created_at', { ascending: false })
 
       if (usersError) {
-        console.error('Error fetching users:', usersError)
-        addNotification('error', 'خطأ في جلب المستخدمين: ' + usersError.message)
+        console.error('Supabase error fetching users:', usersError)
+        addNotification('error', 'خطأ في الاتصال بقاعدة البيانات: ' + usersError.message)
         return
       }
 
-      console.log('Users fetched successfully:', usersData?.length || 0)
+      console.log('Users fetched successfully:', usersData?.length || 0, usersData)
       setUsers(usersData || [])
+      
+      if (usersData && usersData.length > 0) {
+        addNotification('success', `تم جلب ${usersData.length} مستخدم بنجاح`)
+      }
     } catch (error) {
       console.error('Error fetching users:', error)
-      addNotification('error', 'خطأ في جلب المستخدمين: ' + (error as Error).message)
+      addNotification('error', 'خطأ عام في جلب المستخدمين: ' + (error as Error).message)
     } finally {
       setLoading(false)
     }
