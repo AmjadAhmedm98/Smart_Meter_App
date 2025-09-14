@@ -72,29 +72,20 @@ export const UserManagement: React.FC = () => {
   const fetchUsers = async () => {
     try {
       console.log('Fetching users from app_users table...')
-      // جلب المستخدمين عبر Edge Function لتجاوز RLS
-      try {
-        const { data: usersData, error: usersError } = await supabase.functions.invoke('admin-users', {
-          body: { action: 'GET' }
-        })
+      // جلب المستخدمين مباشرة من قاعدة البيانات
+      const { data: usersData, error: usersError } = await supabase
+        .from('app_users')
+        .select('id, username, role, full_name, department, position, is_active, created_at, updated_at')
+        .order('created_at', { ascending: false })
 
-        if (usersError) {
-          console.error('Error fetching users:', usersError)
-          if (usersError.message.includes('Edge Function returned a non-2xx status code')) {
-            addNotification('error', 'Edge Function غير مُعد بشكل صحيح. تحقق من إعدادات Supabase Dashboard > Edge Functions > admin-users > Settings')
-          } else {
-            addNotification('error', 'خطأ في جلب المستخدمين: ' + usersError.message)
-          }
-          return
-        }
-
-        console.log('Users fetched successfully:', usersData?.data?.length || 0, usersData?.data)
-        setUsers(usersData?.data || [])
-      } catch (functionError: any) {
-        console.error('Edge Function error:', functionError)
-        addNotification('error', 'Edge Function admin-users غير متوفر. يرجى إعداده في Supabase Dashboard')
+      if (usersError) {
+        console.error('Error fetching users:', usersError)
+        addNotification('error', 'خطأ في جلب المستخدمين: ' + usersError.message)
         return
       }
+
+      console.log('Users fetched successfully:', usersData?.length || 0)
+      setUsers(usersData || [])
     } catch (error) {
       console.error('Error fetching users:', error)
       addNotification('error', 'خطأ في جلب المستخدمين: ' + (error as Error).message)
@@ -114,26 +105,36 @@ export const UserManagement: React.FC = () => {
       }
 
       // إنشاء المستخدم عبر Edge Function
-      const { data: result, error: insertError } = await supabase.functions.invoke('admin-users', {
-        body: {
-          action: 'POST',
-          userData: {
-            username: formData.username,
-            password: formData.password,
-            role: formData.role,
-            full_name: formData.full_name || null,
-            department: formData.department || null,
-            position: formData.position || null
-          }
-        }
-      })
+      // التحقق من عدم وجود اليوزرنيم مسبقاً
+      const { data: existingUser } = await supabase
+        .from('app_users')
+        .select('id')
+        .eq('username', formData.username)
+        .limit(1)
 
-      if (insertError) {
-        throw new Error(insertError.message)
+      if (existingUser && existingUser.length > 0) {
+        throw new Error('اسم المستخدم موجود مسبقاً')
       }
 
-      if (result?.error) {
-        throw new Error(result.error)
+      // إنشاء المستخدم مباشرة في قاعدة البيانات
+      const { data: newUser, error: insertError } = await supabase
+        .from('app_users')
+        .insert([{
+          username: formData.username,
+          password_hash: formData.password, // في الإنتاج يجب تشفير كلمة المرور
+          role: formData.role,
+          full_name: formData.full_name || null,
+          department: formData.department || null,
+          position: formData.position || null
+        }])
+        .select()
+        .single()
+
+      if (insertError) {
+        if (insertError.code === '23505') {
+          throw new Error('اسم المستخدم موجود مسبقاً')
+        }
+        throw new Error(insertError.message)
       }
 
       addNotification('success', 'تم إنشاء المستخدم بنجاح! 🎉')
@@ -162,19 +163,14 @@ export const UserManagement: React.FC = () => {
       }
 
       // حذف المستخدم عبر Edge Function
-      const { data: result, error } = await supabase.functions.invoke('admin-users', {
-        body: {
-          action: 'DELETE',
-          userId: userId
-        }
-      })
+      // حذف المستخدم مباشرة من قاعدة البيانات
+      const { error } = await supabase
+        .from('app_users')
+        .delete()
+        .eq('id', userId)
 
       if (error) {
         throw new Error(error.message)
-      }
-
-      if (result?.error) {
-        throw new Error(result.error)
       }
 
       addNotification('success', 'تم حذف المستخدم بنجاح! 🗑️')
@@ -258,20 +254,14 @@ export const UserManagement: React.FC = () => {
       }
 
       // تحديث المستخدم عبر Edge Function
-      const { data: result, error } = await supabase.functions.invoke('admin-users', {
-        body: {
-          action: 'PUT',
-          userId: editingUser.id,
-          userData: updateData
-        }
-      })
+      // تحديث المستخدم مباشرة في قاعدة البيانات
+      const { error } = await supabase
+        .from('app_users')
+        .update(updateData)
+        .eq('id', editingUser.id)
 
       if (error) {
         throw new Error(error.message)
-      }
-
-      if (result?.error) {
-        throw new Error(result.error)
       }
 
       addNotification('success', 'تم تحديث بيانات المستخدم بنجاح! ✏️')
