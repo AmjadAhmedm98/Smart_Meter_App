@@ -12,7 +12,7 @@
 ### 2. إعداد متغيرات البيئة لدالة auth-login
 في إعدادات الدالة:
 - `SUPABASE_URL`: انسخ من Project Settings > API
-- `SUPABASE_SERVICE_ROLE_KEY`: انسخ من Project Settings > API
+- `SUPABASE_SERVICE_ROLE_KEY`: sb_secret_kWj4x2Rra0LIHOeDTWhdvw_BJYDiiJs
 
 ### 3. إنشاء Edge Function لإدارة المستخدمين
 1. إنشاء دالة جديدة: `admin-users`
