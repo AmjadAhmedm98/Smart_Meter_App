@@ -31,17 +31,21 @@ export const LoginForm: React.FC = () => {
     try {
       const { error } = await signIn(username, password)
       if (error) {
+        console.error('Login error:', error)
         if (error.message === 'Invalid credentials') {
           setError('اسم المستخدم أو كلمة المرور غير صحيحة')
         } else if (error.message === 'Account is disabled') {
           setError('الحساب غير مفعل. يرجى التواصل مع المدير')
         } else if (error.message.includes('Edge Function') || error.message.includes('non-2xx')) {
-          setError('اسم المستخدم أو كلمة المرور غير صحيحة')
+          setError('خطأ في الاتصال بالخادم. تأكد من إعداد Edge Functions')
         } else {
           setError(error.message || 'اسم المستخدم أو كلمة المرور غير صحيحة')
         }
+      } else {
+        console.log('Login successful')
       }
     } catch (err) {
+      console.error('Login catch error:', err)
       setError('اسم المستخدم أو كلمة المرور غير صحيحة')
     } finally {
       setLoading(false)

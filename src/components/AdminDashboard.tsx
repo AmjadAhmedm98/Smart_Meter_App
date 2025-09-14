@@ -76,7 +76,7 @@ export const AdminDashboard: React.FC = () => {
   }, [])
 
   const fetchData = async () => {
-    if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+    if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY) {
       console.error('Supabase configuration missing. Please set up your .env file.')
       setLoading(false)
       return

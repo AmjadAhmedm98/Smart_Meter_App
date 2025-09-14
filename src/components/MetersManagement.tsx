@@ -77,7 +77,6 @@ export const MetersManagement: React.FC<MetersManagementProps> = ({ onDataChange
       if (error) throw error
       setMeters(data || [])
     } catch (error) {
-          app_user_id: user?.id
       addNotification('error', 'خطأ في جلب بيانات المقاييس')
     } finally {
       setLoading(false)

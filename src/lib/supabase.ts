@@ -9,7 +9,7 @@ if (!supabaseUrl || !supabasePublishableKey) {
     VITE_SUPABASE_PUBLISHABLE_KEY: !!supabasePublishableKey,
     url: supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'undefined'
   })
-  throw new Error('Supabase configuration is missing. Please check your .env file.')
+  console.warn('Supabase configuration is missing. Please check your .env file.')
 }
 
 export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
