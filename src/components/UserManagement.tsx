@@ -128,10 +128,6 @@ export const UserManagement: React.FC = () => {
 
       console.log('Users fetched successfully:', usersData?.length || 0, usersData)
       setUsers(usersData || [])
-      
-      if (usersData && usersData.length > 0) {
-        addNotification('success', `تم جلب ${usersData.length} مستخدم بنجاح`)
-      }
     } catch (error) {
       console.error('Error fetching users:', error)
       addNotification('error', 'خطأ عام في جلب المستخدمين: ' + (error as Error).message)
